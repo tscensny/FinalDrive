@@ -20,8 +20,9 @@ public class Robot extends IterativeRobot {
 	DriveTrain d;
 	AHRS ahrs;
 	AutoModes auto;
+	VisionTargeting vt;
 	boolean arcade, reach, cross, high, low;
-	double num;
+	double num, angle;
 	int position, mode;
 
 	public void robotInit() {
@@ -29,17 +30,19 @@ public class Robot extends IterativeRobot {
 		d = new DriveTrain(4);
 		ahrs = new AHRS(SerialPort.Port.kMXP);
 		auto = new AutoModes(d, ahrs);
+		vt = new VisionTargeting();
 	}
 
 	public void autonomousInit() {
 		reach = false;
 		cross = false;
 		high = false;
+		
 		num = 1234; 					// TODO This is where the number from the digital display board will go
-		String n = Double.toString(num);// the goal here is to get the 2nd digit and the 4th digit
+		String n = Double.toString(num);// the goal here is to get the 2nd digit and the 4th digit from the board
 		String p = "";
-		for (int i = 4; i < 2; i++) {
-			p += n.substring(i + 1, i + 2);
+		for (int k = 4; k < 2; k++) {
+			p += n.substring(k + 1, k + 2);
 		}
 		position = Integer.parseInt(p);		
 		String m = "";
@@ -57,86 +60,100 @@ public class Robot extends IterativeRobot {
 	// This function is called periodically during autonomous
 
 	public void autonomousPeriodic() {
+		angle = vt.getAngle();
 		switch (position) {
 		case 1:
 			switch (mode) {
 			case 1:
-				auto.reachDefense();//TODO The first angles in lowG and highG are preliminary
-				break;				//They will be later replaced with angles from the camera
+				auto.reach();//TODO The first angles in lowG and highG are preliminary
+				break;				//They will be later replaced with angles from the camera (hopefully)
 			case 2:
-				auto.crossDefense();
+				auto.cross();
 				break;
 			case 3:
-				auto.lowG(33, 3);
+				auto.findLine();
 				break;
 			case 4:
-				auto.highG(-147, 3);
+				auto.lowG(angle, 3);
+				break;
+			case 5:
+				auto.highG(angle - 180, 3);
 				break;
 			}
 		case 2:
 			switch (mode) {
 			case 1:
-				auto.reachDefense();
+				auto.reach();
 				break;
 			case 2:
-				auto.crossDefense();
+				auto.cross();
 				break;
 			case 3:
-				auto.lowG(63, 3);
+				auto.findLine();
 				break;
 			case 4:
-				auto.highG(-117, 3);
+				auto.lowG(angle , 3);
+				break;
+			case 5:
+				auto.highG(angle - 180, 3);
 				break;
 			}
 		case 3:
 			switch (mode) {
 			case 1:
-				auto.reachDefense();
+				auto.reach();
 				break;
 			case 2:
-				auto.crossDefense();
+				auto.cross();
 				break;
 			case 3:
-				auto.lowG(78, 3);
+				auto.findLine();
 				break;
 			case 4:
-				auto.highG(-102, 3);
+				auto.lowG(angle, 3);
+				break;
+			case 5:
+				auto.highG(angle - 180, 3);
 				break;
 			}
 		case 4:
 			switch (mode) {
 			case 1:
-				auto.reachDefense();
+				auto.reach();
 				break;
 			case 2:
-				auto.crossDefense();
+				auto.cross();
 				break;
 			case 3:
-				auto.lowG(-4, 3);
+				auto.findLine();
 				break;
 			case 4:
-				auto.highG(176, 3);
+				auto.lowG(angle, 3);
+				break;
+			case 5:
+				auto.highG(angle + 180, 3);
 				break;
 			}
 		case 5:
 			switch (mode) {
 			case 1:
-				auto.reachDefense();
+				auto.reach();
 				break;
 			case 2:
-				auto.crossDefense();
+				auto.cross();
 				break;
 			case 3:
-				auto.lowG(-20, 3);
+				auto.findLine();
 				break;
 			case 4:
-				auto.highG(160, 3);
+				auto.lowG(angle, 3);
+				break;
+			case 5:
+				auto.highG(angle + 180, 3);
 				break;
 			}
-
 		}
 	}
-
 	/**
 	 * This function is called periodically during operator control
 	 */

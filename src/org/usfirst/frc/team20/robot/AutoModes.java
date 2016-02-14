@@ -10,7 +10,7 @@ public class AutoModes { // practlas uses roll instead of pitch
 	DigitalInput lineSensor;
 	AnalogInput ultrasonic;
 	AHRS navx;
-	private boolean gotYaw, reached = false, turned = false, seeLine = false;
+	private boolean gotYaw, turned = false, seeLine = false;
 	private double origYaw;
 	private boolean gotPitch;
 	private double origPitch;
@@ -32,7 +32,10 @@ public class AutoModes { // practlas uses roll instead of pitch
 	public void driveDist(double distance, double speed) { // encoders
 		System.out.println(drive.motors[0].getPosition());
 	}
-
+	public double getTargetAngle(){
+		
+		return 0;
+	}
 	public void driveTime(double time, double speed) {
 		if (!gotTime)
 			origTime = DriverStation.getInstance().getMatchTime();
@@ -47,24 +50,24 @@ public class AutoModes { // practlas uses roll instead of pitch
 
 	public void lowG(double angle, double tolerance) {
 		if (!crossed)
-			crossDefense();
+			cross();
 		
 		if (!seeLine && crossed)
-			driveToLine();
+			findLine();
 		
 		if (!turned && seeLine) 
 			turnToAngle(angle, tolerance);
 		
 		if (turned) 
-			reachDefense();
+			reach();
 	}
 
 	public void highG(double angle, double tolerance) {
 		if(!crossed)
-			crossDefense();
+			cross();
 
 		if(!seeLine && crossed)
-			driveToLine();
+			findLine();
 
 		if(!turned && seeLine)
 			turnToAngle(angle, tolerance);
@@ -87,7 +90,7 @@ public class AutoModes { // practlas uses roll instead of pitch
 		drive.drive(3, 0);
 	}
 
-	public void driveToLine() {
+	public void findLine() {
 		if (!lineSensor.get()) {
 			drive.drive(0, 1);
 			drive.drive(1, -1);
@@ -131,7 +134,7 @@ public class AutoModes { // practlas uses roll instead of pitch
 		//TODO SHOOT
 	}
 
-	public void crossDefense() {
+	public void cross() {
 		if (!gotPitch) {
 			origPitch = navx.getPitch();
 			gotPitch = true;
@@ -149,14 +152,13 @@ public class AutoModes { // practlas uses roll instead of pitch
 
 	}
 
-	public void reachDefense() {
+	public void reach() {
 		if (!gotPitch) {
 			origPitch = navx.getPitch();
 			gotPitch = true;
 		}
 		if (navx.getPitch() > origPitch + 10) {
 			stop();
-			reached = true;
 		} else {
 			drive(1);
 		}
