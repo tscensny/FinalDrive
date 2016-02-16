@@ -163,11 +163,10 @@ public class Robot extends IterativeRobot {
 		double left = joy.getRawAxis(2);
 		double straightr = joy.getRawAxis(5);
 		if (arcade)
-			d.arcadeDrive(straightr, right, left);
+			d.arcadeDrive(straightl, right, left);
 		else if (!arcade)
 			d.tankDrive(straightl, straightr);
-		if (joy.getRawButton(8)) // If your a fool and want tank drive you can
-								 // press the pause button
+		if (joy.getRawButton(8)) // If your a fool and want tank drive you can press the pause button
 			arcade = !arcade;
 	}
 
