@@ -2,9 +2,7 @@ package org.usfirst.frc.team20.robot;
 
 import org.usfirst.frc.team20.robot.DriveTrain;
 import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.*;
 
 public class AutoModes { // practlas uses roll instead of pitch
 	DigitalInput lineSensor;
