@@ -52,13 +52,13 @@ public class Robot extends IterativeRobot {
 	// This function is called periodically during autonomous
 
 	public void autonomousPeriodic() {
-		angle = vt.getAngle();
+		angle = vt.getAngle(); //TODO this has to go somewhere else 
 		switch (position) {
 		case 1:
 			switch (mode) {
 			case 1:
-				auto.reach();       //TODO The first angles in lowG and highG are preliminary
-				break;				//They will be later replaced with angles from the camera (hopefully)
+				auto.reach();       
+				break;				
 			case 2:
 				auto.cross();
 				break;
@@ -176,7 +176,7 @@ public class Robot extends IterativeRobot {
 			if ( counterPos > 5 ) {
 				a -= 5;
 				counterPos = 0;
-			} else counterPos ++;
+			} else counterPos++;
 			board.display(a);
 		}
 		if (board.getButtonB()) {
