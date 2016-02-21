@@ -24,10 +24,11 @@ public class Robot extends IterativeRobot {
 	VisionTargeting vt;
 	boolean arcade, reach, cross, high, low;
 	double angle,a;
-	int num, position, mode, counterPos, counterMode;
+	int mode;
 	REVDigitBoard board;
 	String autoSelected;
 	SendableChooser chooser;
+
 	public void robotInit() {
 		joy = new Joystick(0);
 		d = new DriveTrain(4);
@@ -40,8 +41,7 @@ public class Robot extends IterativeRobot {
 		reach = false;
 		cross = false;
 		high = false;
-		num = counterPos; 				
-		mode = counterMode;
+		mode = (int) a;
 		low = false;
 	}
 
@@ -52,100 +52,25 @@ public class Robot extends IterativeRobot {
 	// This function is called periodically during autonomous
 
 	public void autonomousPeriodic() {
-		angle = vt.getAngle(); //TODO this has to go somewhere else 
-		switch (position) {
+		switch (mode) {
 		case 1:
-			switch (mode) {
-			case 1:
-				auto.reach();       
-				break;				
-			case 2:
-				auto.cross();
-				break;
-			case 3:
-				auto.findLine();
-				break;
-			case 4:
-				auto.lowG(angle, 3);
-				break;
-			case 5:
-				auto.highG(angle - 180, 3);
-				break;
-			}
+			auto.reach();
+			break;
 		case 2:
-			switch (mode) {
-			case 1:
-				auto.reach();
-				break;
-			case 2:
-				auto.cross();
-				break;
-			case 3:
-				auto.findLine();
-				break;
-			case 4:
-				auto.lowG(angle , 3);
-				break;
-			case 5:
-				auto.highG(angle - 180, 3);
-				break;
-			}
+			auto.cross();
+			break;
 		case 3:
-			switch (mode) {
-			case 1:
-				auto.reach();
-				break;
-			case 2:
-				auto.cross();
-				break;
-			case 3:
-				auto.findLine();
-				break;
-			case 4:
-				auto.lowG(angle, 3);
-				break;
-			case 5:
-				auto.highG(angle - 180, 3);
-				break;
-			}
+			auto.findLine();
+			break;
 		case 4:
-			switch (mode) {
-			case 1:
-				auto.reach();
-				break;
-			case 2:
-				auto.cross();
-				break;
-			case 3:
-				auto.findLine();
-				break;
-			case 4:
-				auto.lowG(angle, 3);
-				break;
-			case 5:
-				auto.highG(angle + 180, 3);
-				break;
-			}
+			auto.lowG(3);
+			break;
 		case 5:
-			switch (mode) {
-			case 1:
-				auto.reach();
-				break;
-			case 2:
-				auto.cross();
-				break;
-			case 3:
-				auto.findLine();
-				break;
-			case 4:
-				auto.lowG(angle, 3);
-				break;
-			case 5:
-				auto.highG(angle + 180, 3);
-				break;
-			}
+			auto.highG(3);
+			break;
 		}
 	}
+
 	/**
 	 * This function is called periodically during operator control
 	 */
@@ -158,7 +83,8 @@ public class Robot extends IterativeRobot {
 			d.arcadeDrive(straightl, right, left);
 		else if (!arcade)
 			d.tankDrive(straightl, straightr);
-		if (joy.getRawButton(8)) // If your a fool and want tank drive you can press the pause button
+		if (joy.getRawButton(8)) // If your a fool and want tank drive you can
+									// press the pause button
 			arcade = !arcade;
 	}
 
@@ -166,26 +92,16 @@ public class Robot extends IterativeRobot {
 	 * This function is called periodically during test mode
 	 */
 	public void disabledInit() {
-		counterPos = 0;
-		counterMode = 0;
 		a = 0;
 	}
+
 	public void disabledPeriodic() {
+		board.display(a);
 		if (board.getButtonA()) {
 			a += 1;
-			if ( counterPos > 5 ) {
-				a -= 5;
-				counterPos = 0;
-			} else counterPos++;
-			board.display(a);
 		}
 		if (board.getButtonB()) {
-			a += .01;
-			if (counterMode > 5) {
-				counterMode = 0;
-				a -= .05;
-			} else counterMode++;
-			board.display(a);
+			a -= 1;
 		}
 
 	}

@@ -10,17 +10,18 @@ public class AutoModes { // practlas uses roll instead of pitch
 	DigitalInput lineSensor;
 	AnalogInput ultrasonic;
 	AHRS navx;
-	private boolean gotYaw, turned = false, seeLine = false;
-	private double origYaw;
+	private boolean gotAngle, turned = false, seeLine = false;
+	private double origAngle;
 	private boolean gotPitch;
 	private double origPitch;
 	DriveTrain drive = new DriveTrain(4);
+	VisionTargeting vt = new VisionTargeting();
 	AnalogInput rightEncoder;
 	AnalogInput leftEncoder;
 	private boolean crossed = false;
 	private boolean flat = false;
-	private boolean gotTime = false;
-	private double origTime;
+	private boolean gotTime = false, gotVAngle = false;
+	private double origTime, angle;
 
 	public AutoModes(DriveTrain drive, AHRS navx) {
 		drive.assignPort(0, 2); // TODO port numbers for DriveTrain
@@ -29,7 +30,7 @@ public class AutoModes { // practlas uses roll instead of pitch
 		drive.assignPort(3, 11);
 	}
 
-	public void driveDist(double distance, double speed) { // encoders
+	public void driveDist(double distance, double speed) { // TODO encoders
 		System.out.println(drive.motors[0].getPosition());
 	}
 	public void driveTime(double time, double speed) {
@@ -43,29 +44,40 @@ public class AutoModes { // practlas uses roll instead of pitch
 			drive.drive(3, speed);
 		}
 	}
+	
 
-	public void lowG(double angle, double tolerance) {
+	public void lowG(double tolerance) {
 		if (!crossed)
 			cross();
 		
 		if (!seeLine && crossed)
 			findLine();
 		
-		if (!turned && seeLine) 
+		if (seeLine && !turned && !gotVAngle) {
+			angle = vt.getAngle();
+			gotVAngle = true;
+		}
+		
+		if (!turned && seeLine && gotVAngle) 
 			turnToAngle(angle, tolerance);
 		
 		if (turned) 
 			reach();
 	}
 
-	public void highG(double angle, double tolerance) {
+	public void highG(double tolerance) {
 		if(!crossed)
 			cross();
 
 		if(!seeLine && crossed)
 			findLine();
+		
+		if (seeLine && !turned && !gotVAngle) {
+			angle = vt.getAngle();
+			gotVAngle = true;
+		}
 
-		if(!turned && seeLine)
+		if(!turned && seeLine && gotVAngle)
 			turnToAngle(angle, tolerance);
 		
 		if(turned)
@@ -104,19 +116,19 @@ public class AutoModes { // practlas uses roll instead of pitch
 	public void turnToAngle(double angle, double tolerance) { // robot turn to
 																// the inserted
 																// angle
-		if (!gotYaw) {
-			origYaw = navx.getYaw();
-			gotYaw = true;
+		if (!gotAngle) {
+			origAngle = navx.getAngle();
+			gotAngle = true;
 		}
-		if (navx.getYaw() > origYaw + angle + tolerance
-				&& navx.getYaw() < origYaw + 180) {
+		if (navx.getAngle() > origAngle + angle + tolerance
+				&& navx.getAngle() < origAngle + 180) {
 			drive.drive(0, 1); // TODO negate proper side
 			drive.drive(1, 1);
 			drive.drive(2, 1);
 			drive.drive(3, 1);
 		}
-		if (navx.getYaw() < origYaw + angle - tolerance
-				&& navx.getYaw() > origYaw - 180) {
+		if (navx.getAngle() < origAngle + angle - tolerance
+				&& navx.getAngle() > origAngle + 180) {
 			drive.drive(0, -1); // TODO negate proper side
 			drive.drive(1, -1);
 			drive.drive(2, -1);
