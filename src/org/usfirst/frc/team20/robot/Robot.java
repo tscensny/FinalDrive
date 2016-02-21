@@ -2,6 +2,7 @@ package org.usfirst.frc.team20.robot;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -22,9 +23,11 @@ public class Robot extends IterativeRobot {
 	AutoModes auto;
 	VisionTargeting vt;
 	boolean arcade, reach, cross, high, low;
-	double num, angle;
-	int position, mode;
-
+	double angle,a;
+	int num, position, mode, counterPos, counterMode;
+	REVDigitBoard board;
+	String autoSelected;
+	SendableChooser chooser;
 	public void robotInit() {
 		joy = new Joystick(0);
 		d = new DriveTrain(4);
@@ -37,19 +40,8 @@ public class Robot extends IterativeRobot {
 		reach = false;
 		cross = false;
 		high = false;
-		
-		num = 1234; 					// TODO This is where the number from the digital display board will go
-		String n = Double.toString(num);// the goal here is to get the 2nd digit and the 4th digit from the board
-		String p = "";
-		for (int k = 4; k < 2; k++) {
-			p += n.substring(k + 1, k + 2);
-		}
-		position = Integer.parseInt(p);		
-		String m = "";
-		for (int i = 4; i > 3; i--) {
-			m += n.substring(i - 1);
-		}
-		mode = Integer.parseInt(m);
+		num = counterPos; 				
+		mode = counterMode;
 		low = false;
 	}
 
@@ -65,7 +57,7 @@ public class Robot extends IterativeRobot {
 		case 1:
 			switch (mode) {
 			case 1:
-				auto.reach();//TODO The first angles in lowG and highG are preliminary
+				auto.reach();       //TODO The first angles in lowG and highG are preliminary
 				break;				//They will be later replaced with angles from the camera (hopefully)
 			case 2:
 				auto.cross();
@@ -173,6 +165,31 @@ public class Robot extends IterativeRobot {
 	/**
 	 * This function is called periodically during test mode
 	 */
+	public void disabledInit() {
+		counterPos = 0;
+		counterMode = 0;
+		a = 0;
+	}
+	public void disabledPeriodic() {
+		if (board.getButtonA()) {
+			a += 1;
+			if ( counterPos > 5 ) {
+				a -= 5;
+				counterPos = 0;
+			} else counterPos ++;
+			board.display(a);
+		}
+		if (board.getButtonB()) {
+			a += .01;
+			if (counterMode > 5) {
+				counterMode = 0;
+				a -= .05;
+			} else counterMode++;
+			board.display(a);
+		}
+
+	}
+
 	public void testPeriodic() {
 
 	}

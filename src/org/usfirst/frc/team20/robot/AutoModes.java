@@ -32,10 +32,6 @@ public class AutoModes { // practlas uses roll instead of pitch
 	public void driveDist(double distance, double speed) { // encoders
 		System.out.println(drive.motors[0].getPosition());
 	}
-	public double getTargetAngle(){
-		
-		return 0;
-	}
 	public void driveTime(double time, double speed) {
 		if (!gotTime)
 			origTime = DriverStation.getInstance().getMatchTime();
